@@ -1,0 +1,25 @@
+FROM alpine:3.12.3
+
+LABEL MAINTAINER='Prakash Khadka'
+
+RUN mkdir -p /data/code
+WORKDIR /data/code
+
+RUN apk update && \
+    apk add nginx 
+
+COPY nginx/nginx.conf /etc/nginx/nginx.conf
+COPY nginx/default.conf /etc/nginx/conf.d/default.conf
+COPY public_html/ .
+
+RUN  mkdir -p /run/nginx/ && \
+     touch /run/nginx/nginx.pid && \
+     chown nginx:nginx /run/nginx -R
+
+VOLUME /data/code/wp-content/uploads
+
+EXPOSE 8080
+
+RUN rm -rf /var/cache/apk/*
+
+CMD ["nginx", "-g", "daemon off;"]

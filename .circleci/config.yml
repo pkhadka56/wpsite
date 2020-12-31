@@ -1,0 +1,21 @@
+version: 2.1
+orbs:
+  docker: circleci/docker@1.5.0
+
+jobs:
+  build-nginx:
+    environment:
+      IMAGE_NAME: pkhadka56/wpsite-php
+    docker:
+      - image: circleci/buildpack-deps:stretch
+    steps:
+      - checkout
+      - setup_remote_docker
+      - run:
+          name: Build Docker image
+          command: docker build -t $IMAGE_NAME:latest -f Dockerfile-nginx .
+      - run:
+          name: Publish Docker Image to Docker Hub
+          command: |
+            echo "$DOCKERHUB_TOKEN" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
+            docker push $IMAGE_NAME:latest          
