@@ -31,7 +31,8 @@ jobs:
       IMAGE_NGINX: pkhadka56/wpsite-nginx
     docker:
       - image: circleci/buildpack-deps:stretch
-    steps:     
+    steps:  
+      - setup_remote_docker       
       - run:
           name: Publish PHP Docker Image to Docker Hub
           command: |
