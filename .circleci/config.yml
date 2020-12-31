@@ -3,7 +3,7 @@ orbs:
   docker: circleci/docker@1.5.0
 
 jobs:
-  build-php:
+  build-push-php:
     environment:
       IMAGE_NAME: pkhadka56/wpsite-php
     docker:
@@ -14,7 +14,13 @@ jobs:
       - run:
           name: Build Docker image
           command: docker build -t $IMAGE_NAME:v0.1.${CIRCLE_BUILD_NUM} -f Dockerfile-php .
-  build-nginx:
+      - run:
+          name: Publish PHP Docker Image to Docker Hub
+          command: |
+            docker login -u "$DOCKERHUB_USERNAME" -p $DOCKERHUB_TOKEN
+            docker push $IMAGE_NAME:v0.1.${CIRCLE_BUILD_NUM}
+
+  build-push-nginx:
     environment:
       IMAGE_NAME: pkhadka56/wpsite-nginx
     docker:
@@ -24,38 +30,19 @@ jobs:
       - setup_remote_docker    
       - run:
           name: Build Docker image
-          command: docker build -t $IMAGE_NAME:v0.1.${CIRCLE_BUILD_NUM} -f Dockerfile-nginx .     
-  publish-images:
-    environment:
-      IMAGE_PHP: pkhadka56/wpsite-php
-      IMAGE_NGINX: pkhadka56/wpsite-nginx
-    docker:
-      - image: circleci/buildpack-deps:stretch
-    steps:  
-      - setup_remote_docker       
+          command: docker build -t $IMAGE_NAME:v0.1.${CIRCLE_BUILD_NUM} -f Dockerfile-nginx .
       - run:
-          name: Publish PHP Docker Image to Docker Hub
+          name: Publish NGINX Docker Image to Docker Hub
           command: |
             docker login -u "$DOCKERHUB_USERNAME" -p $DOCKERHUB_TOKEN
-            docker push $IMAGE_PHP:v0.1.${CIRCLE_BUILD_NUM}
-      - run:
-          name: Publish PHP Docker Image to Docker Hub
-          command: |
-            docker login -u "$DOCKERHUB_USERNAME" -p $DOCKERHUB_TOKEN
-            docker push $IMAGE_NGINX:v0.1.${CIRCLE_BUILD_NUM}            
+            docker push $IMAGE_NAME:v0.1.${CIRCLE_BUILD_NUM}                  
 
 workflows:
   build-main:
     jobs:
-      - build-php:
+      - build-push-php:
           context:
             - production
-      - build-nginx:
+      - build-push-nginx:
           context:
             - production
-      - publish-images:
-          requires:
-            - build-php
-            - build-nginx
-          context:
-            - production                        
