@@ -38,6 +38,18 @@ jobs:
             docker push $IMAGE_NAME:v0.1.${CIRCLE_BUILD_NUM}     
 
   fetch-images:
+    environment:
+      IMAGE_NAME: pkhadka56/wpsite-nginx
+    docker:
+      - image: circleci/buildpack-deps:stretch
+    steps:
+      - checkout
+      - setup_remote_docker    
+      - run:
+          name: Pull image
+          command: docker pull $IMAGE_NAME:v0.1.${CIRCLE_BUILD_NUM}
+
+
   deploy-containers:                         
 
 workflows:

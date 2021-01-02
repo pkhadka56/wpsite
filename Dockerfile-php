@@ -5,8 +5,8 @@ LABEL MAINTAINER='Prakash Khadka'
 ENV PHP_VERSION=7
 ENV PHP_INI_DIR=/etc/php$PHP_VERSION
 
-RUN mkdir -p /data/code
-WORKDIR /data/code
+RUN mkdir -p /var/www/html
+WORKDIR /var/www/html
 
 RUN apk update && \
     apk add php$PHP_VERSION php$PHP_VERSION-mysqlnd php$PHP_VERSION-fpm 
@@ -16,7 +16,7 @@ COPY php/www.conf $PHP_INI_DIR/php-fpm.d/www.conf
 
 COPY public_html/ .
 
-VOLUME /data/code/wp-content/uploads
+VOLUME /var/www/html/wp-content/uploads
 
 RUN rm -rf /var/cache/apk/*
 

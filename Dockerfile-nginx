@@ -2,8 +2,8 @@ FROM alpine:3.12.3
 
 LABEL MAINTAINER='Prakash Khadka'
 
-RUN mkdir -p /data/code
-WORKDIR /data/code
+RUN mkdir -p /var/www/html 
+WORKDIR /var/www/html
 
 RUN apk update && \
     apk add nginx 
@@ -16,7 +16,7 @@ RUN  mkdir -p /run/nginx/ && \
      touch /run/nginx/nginx.pid && \
      chown nginx:nginx /run/nginx -R
 
-VOLUME /data/code/wp-content/uploads
+VOLUME /var/www/html/wp-content/uploads
 
 EXPOSE 8080
 
